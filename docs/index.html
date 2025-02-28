@@ -10,7 +10,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
       background-color: #f0f0f0;
     }
@@ -20,13 +20,21 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 90%;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
     }
     input {
       padding: 10px;
-      width: 300px;
-      margin-right: 10px;
+      width: 70%;
+      max-width: 300px;
+      margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 4px;
+      font-size: 16px;
     }
     button {
       padding: 10px 20px;
@@ -35,13 +43,17 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 16px;
     }
     button:hover {
       background-color: #0056b3;
     }
-    img {
+    #result {
       margin-top: 20px;
+    }
+    #result img {
       max-width: 200px;
+      width: 100%;
     }
   </style>
 </head>
@@ -51,46 +63,55 @@
     <form id="qrForm">
       <input
         type="text"
-        id="folderUrl"
-        placeholder="URL de la carpeta de Google Drive"
+        id="linkInput"
+        placeholder="Ingresa cualquier enlace (ej. https://google.com)"
       />
       <button type="submit">Generar QR</button>
     </form>
-    <div id="result" style="margin-top: 20px;"></div>
+    <div id="result"></div>
   </div>
 
-  <!-- Cargar la librería QRCode desde CDN -->
+  <!-- Librería QRCode desde CDN -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <script>
-    // Esperar a que el DOM y el script estén cargados
-    window.onload = function () {
-      document.getElementById('qrForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const folderUrl = document.getElementById('folderUrl').value;
+    // Esperar a que el DOM esté listo
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('qrForm');
+      const linkInput = document.getElementById('linkInput');
+      const resultDiv = document.getElementById('result');
 
-        if (!folderUrl) {
-          alert('Por favor, ingresa una URL');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const link = linkInput.value.trim();
+
+        // Validar que se haya ingresado un enlace
+        if (!link) {
+          alert('Por favor, ingresa un enlace válido');
           return;
         }
 
         try {
-          if (typeof QRCode === 'undefined') {
-            throw new Error('Librería QRCode no cargada');
-          }
-          const qrCodeDataUrl = await QRCode.toDataURL(folderUrl);
-          const resultDiv = document.getElementById('result');
+          // Generar el QR como una imagen en formato Data URL
+          const qrCodeDataUrl = await QRCode.toDataURL(link, {
+            width: 200,
+            margin: 1,
+          });
+
+          // Mostrar el QR y el botón de descarga
           resultDiv.innerHTML = `
-            <h3>Tu Código QR:</h3>
+            <h3>Código QR generado:</h3>
             <img src="${qrCodeDataUrl}" alt="Código QR" />
+            <br>
             <button onclick="downloadQR('${qrCodeDataUrl}')">Descargar QR</button>
           `;
         } catch (error) {
-          console.error('Error:', error);
-          alert('Error al generar el QR: ' + error.message);
+          console.error('Error al generar el QR:', error);
+          alert('Hubo un error al generar el QR. Revisa la consola para más detalles.');
         }
       });
-    };
+    });
 
+    // Función para descargar el QR como imagen
     function downloadQR(qrCodeData) {
       const link = document.createElement('a');
       link.href = qrCodeData;
