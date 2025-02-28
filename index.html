@@ -1,0 +1,99 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Códigos QR</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    .container {
+      text-align: center;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input {
+      padding: 10px;
+      width: 300px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    img {
+      margin-top: 20px;
+      max-width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Generador de Códigos QR</h1>
+    <form id="qrForm">
+      <input
+        type="text"
+        id="folderUrl"
+        placeholder="URL de la carpeta de Google Drive"
+      />
+      <button type="submit">Generar QR</button>
+    </form>
+    <div id="result" style="margin-top: 20px;"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script>
+    document.getElementById('qrForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const folderUrl = document.getElementById('folderUrl').value;
+
+      if (!folderUrl) {
+        alert('Por favor, ingresa una URL');
+        return;
+      }
+
+      try {
+        const qrCodeDataUrl = await QRCode.toDataURL(folderUrl);
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `
+          <h3>Tu Código QR:</h3>
+          <img src="${qrCodeDataUrl}" alt="Código QR" />
+          <button onclick="downloadQR('${qrCodeDataUrl}')">Descargar QR</button>
+        `;
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al generar el QR');
+      }
+    });
+
+    function downloadQR(qrCodeData) {
+      const link = document.createElement('a');
+      link.href = qrCodeData;
+      link.download = 'qr-code.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
