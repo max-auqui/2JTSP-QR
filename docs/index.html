@@ -59,30 +59,37 @@
     <div id="result" style="margin-top: 20px;"></div>
   </div>
 
+  <!-- Cargar la librería QRCode desde CDN -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <script>
-    document.getElementById('qrForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const folderUrl = document.getElementById('folderUrl').value;
+    // Esperar a que el DOM y el script estén cargados
+    window.onload = function () {
+      document.getElementById('qrForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const folderUrl = document.getElementById('folderUrl').value;
 
-      if (!folderUrl) {
-        alert('Por favor, ingresa una URL');
-        return;
-      }
+        if (!folderUrl) {
+          alert('Por favor, ingresa una URL');
+          return;
+        }
 
-      try {
-        const qrCodeDataUrl = await QRCode.toDataURL(folderUrl);
-        const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = `
-          <h3>Tu Código QR:</h3>
-          <img src="${qrCodeDataUrl}" alt="Código QR" />
-          <button onclick="downloadQR('${qrCodeDataUrl}')">Descargar QR</button>
-        `;
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error al generar el QR');
-      }
-    });
+        try {
+          if (typeof QRCode === 'undefined') {
+            throw new Error('Librería QRCode no cargada');
+          }
+          const qrCodeDataUrl = await QRCode.toDataURL(folderUrl);
+          const resultDiv = document.getElementById('result');
+          resultDiv.innerHTML = `
+            <h3>Tu Código QR:</h3>
+            <img src="${qrCodeDataUrl}" alt="Código QR" />
+            <button onclick="downloadQR('${qrCodeDataUrl}')">Descargar QR</button>
+          `;
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error al generar el QR: ' + error.message);
+        }
+      });
+    };
 
     function downloadQR(qrCodeData) {
       const link = document.createElement('a');
