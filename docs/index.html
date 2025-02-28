@@ -44,6 +44,7 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
+      margin: 5px;
     }
     button:hover {
       background-color: #0056b3;
@@ -71,10 +72,9 @@
     <div id="result"></div>
   </div>
 
-  <!-- Usar qrcodejs desde un CDN confiable -->
+  <!-- Librería QRCode desde CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
-    // Esperar a que el DOM y el script estén cargados
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('qrForm');
       const linkInput = document.getElementById('linkInput');
@@ -89,16 +89,12 @@
           return;
         }
 
-        // Limpiar el resultado anterior
         resultDiv.innerHTML = '';
-
         try {
-          // Verificar si QRCode está definido
           if (typeof QRCode === 'undefined') {
             throw new Error('La librería QRCode no se cargó correctamente');
           }
 
-          // Generar el QR directamente en el div
           new QRCode(resultDiv, {
             text: link,
             width: 200,
@@ -106,7 +102,6 @@
             margin: 1
           });
 
-          // Añadir botón de descarga después de generar el QR
           setTimeout(() => {
             const qrImg = resultDiv.querySelector('img');
             if (qrImg) {
@@ -115,6 +110,7 @@
                 <img src="${qrImg.src}" alt="Código QR" />
                 <br>
                 <button onclick="downloadQR('${qrImg.src}')">Descargar QR</button>
+                <button onclick="resetForm()">Generar otro QR</button>
               `;
             }
           }, 100);
@@ -133,6 +129,12 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+
+    // Función para limpiar y preparar un nuevo QR
+    function resetForm() {
+      document.getElementById('linkInput').value = '';
+      document.getElementById('result').innerHTML = '';
     }
   </script>
 </body>
