@@ -71,39 +71,69 @@
     <div id="result"></div>
   </div>
 
-  <!-- Librería QRCode desde CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <!-- Usar qrcodejs desde un CDN confiable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
+    // Esperar a que el DOM y el script estén cargados
     document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('qrForm');
-  const linkInput = document.getElementById('linkInput');
-  const resultDiv = document.getElementById('result');
+      const form = document.getElementById('qrForm');
+      const linkInput = document.getElementById('linkInput');
+      const resultDiv = document.getElementById('result');
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const link = linkInput.value.trim();
-    if (!link) {
-      alert('Por favor, ingresa un enlace válido');
-      return;
-    }
-    resultDiv.innerHTML = '';
-    new QRCode(resultDiv, {
-      text: link,
-      width: 200,
-      height: 200,
-      margin: 1
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const link = linkInput.value.trim();
+
+        if (!link) {
+          alert('Por favor, ingresa un enlace válido');
+          return;
+        }
+
+        // Limpiar el resultado anterior
+        resultDiv.innerHTML = '';
+
+        try {
+          // Verificar si QRCode está definido
+          if (typeof QRCode === 'undefined') {
+            throw new Error('La librería QRCode no se cargó correctamente');
+          }
+
+          // Generar el QR directamente en el div
+          new QRCode(resultDiv, {
+            text: link,
+            width: 200,
+            height: 200,
+            margin: 1
+          });
+
+          // Añadir botón de descarga después de generar el QR
+          setTimeout(() => {
+            const qrImg = resultDiv.querySelector('img');
+            if (qrImg) {
+              resultDiv.innerHTML = `
+                <h3>Código QR generado:</h3>
+                <img src="${qrImg.src}" alt="Código QR" />
+                <br>
+                <button onclick="downloadQR('${qrImg.src}')">Descargar QR</button>
+              `;
+            }
+          }, 100);
+        } catch (error) {
+          console.error('Error al generar el QR:', error);
+          alert('Error: ' + error.message);
+        }
+      });
     });
-    setTimeout(() => {
-      const qrImg = resultDiv.querySelector('img');
-      resultDiv.innerHTML = `
-        <h3>Código QR generado:</h3>
-        <img src="${qrImg.src}" alt="Código QR" />
-        <br>
-        <button onclick="downloadQR('${qrImg.src}')">Descargar QR</button>
-      `;
-    }, 100);
-  });
-});
+
+    // Función para descargar el QR
+    function downloadQR(qrCodeData) {
+      const link = document.createElement('a');
+      link.href = qrCodeData;
+      link.download = 'qr-code.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   </script>
 </body>
 </html>
