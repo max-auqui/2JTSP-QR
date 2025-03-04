@@ -8,11 +8,24 @@
     body {
       font-family: Arial, sans-serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column; 
       align-items: center;
       min-height: 100vh;
       margin: 0;
       background-color: #f0f0f0;
+    }
+    header {
+      width: 100%;
+      background-color: #a80707; 
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    header h1 {
+      font-size: 36px; 
+      margin: 0;
+      font-weight: bold;
     }
     .container {
       text-align: center;
@@ -22,8 +35,9 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       max-width: 500px;
       width: 90%;
+      margin-top: 20px; 
     }
-    h1 {
+    h2 {
       font-size: 24px;
       margin-bottom: 20px;
     }
@@ -56,23 +70,46 @@
       max-width: 200px;
       width: 100%;
     }
+    footer {
+      width: 100%;
+      background-color: #333; 
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      font-size: 14px;
+      position: relative; 
+      margin-top: auto; 
+    }
+    footer a {
+      color: #00b7ff; 
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
+  <header>
+    <h1>Corte Superior de Justicia de Ayacucho</h1>
+  </header>
   <div class="container">
-    <h1>Generador de Códigos QR</h1>
+    <h2>Generador de Códigos QR</h2>
     <form id="qrForm">
       <input
         type="text"
         id="linkInput"
-        placeholder="Ingresa cualquier enlace (ej. https://google.com)"
+        placeholder="Ingresa enlace (ej. https://google.com)"
       />
       <button type="submit">Generar QR</button>
     </form>
     <div id="result"></div>
   </div>
-
-  <!-- Librería QRCode desde CDN -->
+  <footer>
+    <p>¿Problemas? Contáctame: mauqui@pj.gob.pe</p>
+    <p>&copy;2025 - Todos los derechos reservados</p>
+  </footer>
+<!-- Librería QRCode desde CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -121,7 +158,6 @@
       });
     });
 
-    // Función para descargar el QR
     function downloadQR(qrCodeData) {
       const link = document.createElement('a');
       link.href = qrCodeData;
@@ -131,7 +167,6 @@
       document.body.removeChild(link);
     }
 
-    // Función para limpiar y preparar un nuevo QR
     function resetForm() {
       document.getElementById('linkInput').value = '';
       document.getElementById('result').innerHTML = '';
